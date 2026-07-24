@@ -1,0 +1,243 @@
+mode: abopt_multicdrs
+model:
+  type: diffab
+  res_feat_dim: 128
+  pair_feat_dim: 64
+  region_feat_dim: 64
+  diffusion:
+    num_steps: 100
+    eps_net_opt:
+      denoise_net: ga
+      num_layers: 6
+      dropout: 0.2
+      cfg_dropout: 0.1
+      encoder_opt:
+        region_relation_opt:
+          design_variant: hgacd_region_residue_bidirectional_v1
+          cross_attention_use_relation_bias: false
+          hierarchical_region_residue:
+            enabled: true
+            residual_scale: 0.35
+            condition_distance_scale: 10.0
+            condition_contact_cutoff: 8.0
+            use_distance_bias: true
+            contact_latent_enabled: true
+            contact_supervision_enabled: true
+            contact_supervision_cutoff: 8.0
+            contact_feedback_scale: 0.25
+          aux_losses:
+            enabled: true
+            contig_logit_rank:
+              enabled: true
+              margin_logit: 0.1
+              start_step: 250
+              t_cdr_max: 40
+            pair_contact:
+              enabled: true
+              start_step: 100
+              cutoff: 8.0
+              cdr_epi_weight: 2.0
+            pair_geometry:
+              enabled: true
+              start_step: 100
+              contact_cutoff: 8.0
+              distance_clip: 20.0
+              topk: 8
+              cdr_epi_weight: 2.0
+              min_weight: 1.0
+              topk_weight: 0.5
+              coverage_weight: 0.5
+  conditioner:
+    use_attention_pool: false
+    FR1: true
+    FR2: true
+    FR3: true
+    FR4: true
+    FR5: true
+    FR6: true
+    FR7: true
+    FR8: true
+    CDR1: true
+    CDR2: true
+    CDR3: true
+    CDR4: true
+    CDR5: true
+    CDR6: true
+    Epitope: true
+    NonEpitope: true
+  modal_training:
+    enabled: true
+    noise_sampling:
+      noise_mode: cdr_only
+      offset: 40
+      adaptive_mode: power
+      power: 1.4
+      epitope_time_strategy: induced_fit_late
+      induced_fit_max_t: 10
+      induced_fit_unfreeze_t_max: 25
+      region_async_training:
+        enabled: true
+        prob: 1.0
+        region_max_lag: 8
+        min_t: 1
+      asyndm_residue:
+        enabled: true
+        region_governed: true
+        controller: graph_dynamic_schedule_async
+        slow_region_fraction: 0.5
+        slow_power: 2.0
+        support_weight: 0.5
+        contact_weight: 0.45
+        region_max_lag: 8
+        sync_warmup_ratio: 0.0
+        max_drain_steps: 100
+        dynamic_schedule_priority_mode: function_first
+        dynamic_schedule_strength: 0.75
+        dynamic_schedule_min_gamma: 0.35
+        dynamic_schedule_max_gamma: 2.25
+        dynamic_schedule_final_sync_clock: 8
+        bio_prior_weight: 0.35
+        anchor_weight: 0.2
+        entropy_weight: 0.0
+      status:
+        discovery: 0.7
+        rigid: 0.15
+        joint: 0.15
+  checkpoint: /root/Antibody_baselines/Diffab_tdgn_hier_graph_async_cdr_v1_20260612_abl_0.3_train_sysn/logs/retrain/bs16/rabd_test/chothia/abl_0pct_train_sync_gpu0123_20260621_rerun/codesign_multicdrs_paced_ga_gpu4_hgacd_v1_20260612_abl_0pct_train_sync/checkpoints/46500/46500_aggregated.pt
+sampling:
+  seed: 2022
+  sample_structure: true
+  sample_sequence: true
+  cdrs:
+  - H_CDR1
+  - H_CDR2
+  - H_CDR3
+  - L_CDR1
+  - L_CDR2
+  - L_CDR3
+  num_samples: 100
+  noise_mode: cdr_only
+  sample_names:
+  - 2vxt_H_L_I
+  - 2adf_H_L_A
+  - 1a14_H_L_N
+  - 1a2y_B_A_C
+  - 5d93_C_B_A
+  - 4ot1_H_L_A
+  - 3s35_H_L_X
+  - 2cmr_H_L_A
+  - 1n8z_B_A_C
+  - 5f9o_H_L_G
+  - 2dd8_H_L_S
+  - 2xwt_A_B_C
+  - 3ffd_A_B_P
+  - 1ic7_H_L_Y
+  - 5d96_J_I_D
+  - 3w9e_A_B_C
+  - 1iqd_B_A_C
+  - 2ghw_B_b_A
+  - 3bn9_D_C_B
+  - 1uj3_B_A_C
+  - 4etq_H_L_C
+  - 1fe8_H_L_A
+  - 2b2x_H_L_A
+  - 4lvn_C_B_A
+  - 4dtg_H_L_K
+  - 4qci_B_A_D
+  - 5ggs_A_B_Z
+  - 1ncb_H_L_N
+  - 4dvr_H_L_G
+  - 2ypv_H_L_A
+  - 1osp_H_L_O
+  - 3mxw_H_L_A
+  - 5l6y_H_L_C
+  - 4fqj_H_L_A
+  - 3o2d_H_L_A
+  - 3l95_B_A_X
+  - 5hi4_H_L_A
+  - 1w72_H_L_AC
+  - 5b8c_B_A_C
+  - 3hi6_X_Y_B
+  - 4ki5_E_F_M
+  - 5en2_A_B_C
+  - 4xnq_B_A_D
+  - 4ydk_H_L_G
+  - 5j13_C_B_A
+  - 2xqy_G_L_A
+  - 3h3b_c_C_B
+  - 3k2u_H_L_A
+  - 3cx5_J_K_E
+  - 4ffv_D_C_B
+  - 4cmh_B_C_A
+  - 5bv7_C_B_A
+  - 3uzq_a_A_B
+  - 3nid_H_L_AD
+  - 4h8w_H_L_G
+  - 4g6m_H_L_A
+  - 3rkd_H_L_A
+  - 5mes_H_L_A
+  - 4g6j_H_L_A
+  - 5nuz_A_B_C
+  async_variant: dynamic_schedule
+  async_controller: graph_dynamic_schedule_async
+  region_max_lag: 8
+  sync_warmup_ratio: 0.0
+  dynamic_schedule_priority_mode: function_first
+  dynamic_schedule_strength: 0.75
+  dynamic_schedule_min_gamma: 0.35
+  dynamic_schedule_max_gamma: 2.25
+  dynamic_schedule_final_sync_clock: 8
+  optimize_steps:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+  - 32
+  - 64
+dataset:
+  test:
+    type: sabdab
+    summary_path: /root/Antibody_baselines/sabdab/260112/sabdab_summary_all.tsv
+    total_data_dir: /root/Antibody_baselines/sabdab/260112/all_structures/chothia
+    processed_dir: /root/Antibody_baselines/Diffab_tdgn_hier_graph_async_cdr_v1_20260612_abl_0.3_train_sysn/data/processed/retrain/rabd_test/multi/no_aug/bs16_paced_full60_infer_44500_20260614
+    data_number_scheme: chothia
+    split: test
+    surface_annotation_mode: auto
+    reset_strc: false
+    transform:
+    - type: patch_around_anchor
+      antigen_patch_mode: soft_only
+    test_data: /root/Antibody_baselines/RABD/diffab_tdgn_hgacd_v1_ckpt44500_ddpm_sync_20260617/diffab_style60/item_ids.txt
+    modal_training:
+      noise_sampling:
+        noise_mode: cdr_only
+        offset: 40
+        power: 1.4
+        epitope_time_strategy: induced_fit_late
+        induced_fit_max_t: 10
+        induced_fit_unfreeze_t_max: 25
+        region_async_training:
+          enabled: true
+          prob: 1.0
+          region_max_lag: 8
+          min_t: 1
+        asyndm_residue:
+          enabled: true
+          region_governed: true
+          slow_region_fraction: 0.5
+          slow_power: 2.0
+          support_weight: 0.5
+          contact_weight: 0.45
+          region_max_lag: 8
+          max_drain_steps: 100
+          controller: graph_dynamic_schedule_async
+          sync_warmup_ratio: 0.0
+          dynamic_schedule_priority_mode: function_first
+          dynamic_schedule_strength: 0.75
+          dynamic_schedule_min_gamma: 0.35
+          dynamic_schedule_max_gamma: 2.25
+          dynamic_schedule_final_sync_clock: 8
+          bio_prior_weight: 0.35
+          anchor_weight: 0.2
+          entropy_weight: 0.0
